@@ -1,0 +1,5 @@
+name = SLA Calculations
+description = SLA Calculations
+package = SLA Calculations
+core = "7.x"
+version = "7.x-1"

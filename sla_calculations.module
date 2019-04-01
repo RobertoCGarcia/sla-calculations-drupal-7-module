@@ -1,0 +1,172 @@
+<?php
+
+/**
+ * @file
+ * Admin Form for SLA Calculations
+ */
+function sla_calculations_menu() {
+
+  $items = array();
+
+  $items['admin/config/sla-calculations/index'] = array(
+        'title' => 'SLA Calculations Options',
+        'description' => 'This module is designed for calculate time between two dates.',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('form_admin_sla_calculations_main'),
+        'access arguments' => array('access sla calculations'),
+        'file' => 'form_admin_sla_calculations_main.inc',
+        'type' => MENU_NORMAL_ITEM,
+        'weight' => -15,
+  );
+
+    return $items;
+
+}
+
+function sla_calculations_permission() {
+  return array(
+    'access sla calculations' => array(
+      'title' => t('Permisson for SLA Calculations'),
+    )
+  );
+}
+
+/*
+* Implemmenting hook_page_build
+* https://api.drupal.org/api/drupal/modules%21system%21system.api.php/function/hook_page_build/7.x
+*/
+function sla_calculations_page_build() {
+  $path = drupal_get_path('module', 'sla_calculations');
+  drupal_add_css($path . '/sla_calculations.css');
+}
+
+
+/*
+* Implemmenting hook_theme
+* https://api.drupal.org/api/drupal/modules%21system%21system.api.php/function/hook_theme/7.x
+*/
+function sla_calculations_theme() {
+    return array(
+    'sla_calculations_full' => array(
+      'template' => 'sla_calculations_full',
+    ),
+    'sla_calculations_middle' => array(
+      'template' => 'sla_calculations_middle',
+    ),
+    'sla_calculations_min' => array(
+      'template' => 'sla_calculations_min',
+    )
+  );
+}
+
+
+/*
+*
+*
+*/
+function sla_calculations_block_info() {
+
+  $blocks['sla_calculations_full'] = array(
+    'info' => 'SLA Calculations Full',
+  );
+
+  $blocks['sla_calculations_middle'] = array(
+    'info' => 'SLA Calculations Middle',
+  );
+
+  $blocks['sla_calculations_min'] = array(
+    'info' => 'SLA Calculations Min',
+  );
+
+  return $blocks;
+
+}
+
+
+/*
+*
+*
+*/
+function sla_calculations_block_view($delta = '') {
+
+     $block = array();
+     $block['subject'] = '';
+
+     //The $delta parameter tells us which block is being requested.
+     switch ($delta) {
+         case 'sla_calculations_full':
+             // Create your block content here
+             $block['subject'] = t('My last 3 news');
+             $query = new EntityFieldQuery();
+             //change news by the name of your content type
+             $query->entityCondition('entity_type', 'node')
+             ->entityCondition('bundle', 'article')
+             ->propertyCondition('status', 1)
+             //->propertyCondition('type', 'article')
+             ->propertyOrderBy("created", "DESC")
+             ->range(0, 10);
+             //->execute()
+             $result = $query->execute();
+             //$count  = $query->count()->execute();
+             //$result = $query->execute();
+             $block['content'] = "<h1>sla_calculations_full</h1>";
+             //$block['content'] .= "Count: " . print_r($result);
+             //$block['content'] =  "<pre>" . $result . "</pre>";
+             foreach($result['node'] as $obj){
+                 //$block['content'] .= " => " . $obj ."<br>";
+                 $node = node_load($obj->nid);
+                 $block['content'] .= l( $node->title, "node/" . $node->nid ) . ' - ' . date('d-m-Y h:m:s', $node->created) . '<br>';
+             }
+
+             /*
+             * Test of Time
+             */
+
+             $mtime = microtime();
+             $mtime = explode(" ",$mtime);
+             $mtime = $mtime[1] + $mtime[0];
+             $starttime = $mtime;
+
+             date_default_timezone_set("America/Mexico_City");
+
+             $dateTime = " Last Update: " . date("h:i:sa");
+
+             $FI = "2019-01-01 03:09:47";
+             $FF = "2019-04-01 14:44:42";
+
+             $SLACalculations = 0;
+
+              $block['content'] .= "tmpFI: ".$FI."</br>";
+              $block['content'] .= "tmpFF: ".$FF."</br>";
+
+
+             for ($date = strtotime($FI); $date < strtotime($FF); $date = strtotime("+1 day", $date)){
+                    $block['content'] .= date("Y-m-d", $date)."<br/>";
+                    //echo date("Y-m-d", $date)." isWeekend= ".isWeekend($date." 00:00:00")."<br/>";
+                    //if(isWeekend($date) == 0){
+                    //     echo date("Y-m-d", $date)."<br/>";
+                    //}
+             }
+
+             //
+             $urlImage = drupal_get_path('module', 'sla_calculations') . "/graficoSLAtime.php";
+             $block['content'] .= $dateTime;
+             $block['content'] .= '<div align="center"><img src="'.$urlImage.'"></div>';
+             //$block['content'] .= ;
+
+         break;
+
+         case 'sla_calculations_middle':
+             $block['content'] = "<h1>sla_calculations_middle</h1>";
+         break;
+
+
+         case 'sla_calculations_min':
+             $block['content'] = "<h1>sla_calculations_min</h1>";
+         break;
+
+
+     }
+
+     return $block;
+}
