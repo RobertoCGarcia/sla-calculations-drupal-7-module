@@ -100,9 +100,10 @@ function sla_calculations_block_view($delta = '') {
              $query = new EntityFieldQuery();
              //change news by the name of your content type
              $query->entityCondition('entity_type', 'node')
-             ->entityCondition('bundle', 'article')
+             //->entityCondition('bundle', 'article')
+             ->propertyCondition('type', 'article')
              ->propertyCondition('status', 1)
-             //->propertyCondition('type', 'article')
+             //
              ->propertyOrderBy("created", "DESC")
              ->range(0, 10);
              //->execute()
@@ -157,14 +158,30 @@ function sla_calculations_block_view($delta = '') {
          break;
 
          case 'sla_calculations_middle':
-             $block['content'] = "<h1>sla_calculations_middle</h1>";
+
+             $dateTime = " Last Update: " . date("h:i:sa");
+             $urlImage = drupal_get_path('module', 'sla_calculations') . "/grafico-01.php";
+             $block['content'] = "<h1>SLA GRAPH</h1>";
+             $block['content'] .= $dateTime;
+             $block['content'] .= '<div align="center"><img src="'.$urlImage.'"></div>';
+
          break;
 
 
          case 'sla_calculations_min':
-             $block['content'] = "<h1>sla_calculations_min</h1>";
-         break;
 
+
+             $block['content'] = "<h1>sla_calculations_min</h1>";
+             $dateTime = " Last Update: " . date("h:i:sa");
+             $urlImage = drupal_get_path('module', 'sla_calculations') . "/grafico-02.php";
+             $block['content'] = "<h1>SLA GRAPH</h1>";
+             $block['content'] .= $dateTime;
+             $block['content'] .= '<div align="center"><img src="'.$urlImage.'"></div>';
+
+             //Prueba de campos en array
+
+
+         break;
 
      }
 
