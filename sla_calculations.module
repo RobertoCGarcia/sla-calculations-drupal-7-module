@@ -97,6 +97,95 @@ function sla_calculations_block_view($delta = '') {
          case 'sla_calculations_full':
              // Create your block content here
              $block['subject'] = t('My last 3 news');
+
+             $arrayContentType = array();
+             $arrayContentType[] = 'alcaldias';
+             $arrayContentType[] = 'article';
+             $arrayContentType[] = 'audio';
+             $arrayContentType[] = 'autor_blog';
+             $arrayContentType[] = 'autor_nota';
+             $arrayContentType[] = 'cartera';
+             $arrayContentType[] = 'carton';
+             $arrayContentType[] = 'chats';
+             $arrayContentType[] = 'marquee';
+             $arrayContentType[] = 'panopoly_page';
+
+             $arrayContentType[] = 'deportes_widget_opta';
+             $arrayContentType[] = 'deportes_widget_video';
+             $arrayContentType[] = 'elecciones_2017_coahuila';
+             $arrayContentType[] = 'elecciones_2017_nayarit';
+             $arrayContentType[] = 'elecciones_2017_veracruz';
+             $arrayContentType[] = 'elecciones_2018_gobernador';
+             $arrayContentType[] = 'elecciones_2018_partidos';
+             $arrayContentType[] = 'elecciones_2018_presidente_';
+             $arrayContentType[] = 'page';
+             $arrayContentType[] = 'emprendedor';
+             $arrayContentType[] = 'entrada_de_blog';
+             $arrayContentType[] = 'opinion';
+             $arrayContentType[] = 'tema_caliente';
+             $arrayContentType[] = 'especial_detalle';
+             $arrayContentType[] = 'especiales';
+             $arrayContentType[] = 'event_calendar';
+
+             $arrayContentType[] = 'event_calendar';
+             $arrayContentType[] = 'feed';
+             $arrayContentType[] = 'feed_item';
+             $arrayContentType[] = 'galeria';
+             $arrayContentType[] = 'grafico';
+             $arrayContentType[] = 'hoy_no_circula';
+
+             $arrayContentType[] = 'include';
+             $arrayContentType[] = 'manuales';
+             $arrayContentType[] = 'minuto_x_minuto';
+             $arrayContentType[] = 'podcast';
+             $arrayContentType[] = 'promo_4_videos';
+             $arrayContentType[] = 'promo_chiapas';
+             $arrayContentType[] = 'promo_df';
+             $arrayContentType[] = 'promo_sitio_01';
+             $arrayContentType[] = 'promo_edomex';
+             $arrayContentType[] = 'promo_sitio_02';
+
+
+             $arrayContentType[] = 'promo_oaxaca';
+             $arrayContentType[] = 'promo_sitio_03';
+             $arrayContentType[] = 'promo_sitio_05';
+             $arrayContentType[] = 'promo_san_luis';
+             $arrayContentType[] = 'promo_veracruz';
+             $arrayContentType[] = 'promo_sitio_04';
+             $arrayContentType[] = 'promo_central_universo_deportivo';
+             $arrayContentType[] = 'promo_cintillo_superior';
+             $arrayContentType[] = 'promo_ediciones_impresas';
+             $arrayContentType[] = 'promo_revistas_flipping_book';
+
+             $arrayContentType[] = 'promo_inf_el_botiquin';
+             $arrayContentType[] = 'promo_inf_universo_deportivo';
+             $arrayContentType[] = 'promo_notas_externas';
+             $arrayContentType[] = 'promo_columna';
+             $arrayContentType[] = 'promo_revistas';
+             $arrayContentType[] = 'promo_revistas_fondo_';
+             $arrayContentType[] = 'promo_universo_deportivo';
+             $arrayContentType[] = 'promo';
+             $arrayContentType[] = 'promo_video_superior';
+             $arrayContentType[] = 'reporte_lector';
+             $arrayContentType[] = 'servicios_apps';
+             $arrayContentType[] = 'serivicios_clima_estados';
+             $arrayContentType[] = 'servicios_club_sms';
+             $arrayContentType[] = 'servicios_hor_scopos';
+             $arrayContentType[] = 'trust_author';
+
+             $arrayContentType[] = 'trust_reference';
+             $arrayContentType[] = 'video';
+             $arrayContentType[] = 'voz_del_lector';
+             $arrayContentType[] = 'borra';
+             $arrayContentType[] = 'image';
+             $arrayContentType[] = 'promo_sitio_union';
+
+             $arrayContentType[] = 'promo_blog';
+             $arrayContentType[] = 'promo_externo_central';
+             $arrayContentType[] = 'promo_externo_lateral';
+             $arrayContentType[] = 'promo_suplementos';
+
+
              $query = new EntityFieldQuery();
              //change news by the name of your content type
              $query->entityCondition('entity_type', 'node')
@@ -133,7 +222,7 @@ function sla_calculations_block_view($delta = '') {
              $dateTime = " Last Update: " . date("h:i:sa");
 
              $FI = "2019-01-01 03:09:47";
-             $FF = "2019-04-01 14:44:42";
+             $FF = "2019-04-25 14:44:42";
 
              $SLACalculations = 0;
 
@@ -154,6 +243,16 @@ function sla_calculations_block_view($delta = '') {
              $block['content'] .= $dateTime;
              $block['content'] .= '<div align="center"><img src="'.$urlImage.'"></div>';
              //$block['content'] .= ;
+
+             $totalItems = 0;
+             foreach ($arrayContentType as $key => $value) {
+                 $total = getTotalNodesByMachineName($value);
+                 $block['content'] .= " Result Total ". $value .": " . $total . "<br/>";
+                 $totalItems = $totalItems + $total;
+                 //$block['content'] .= " Result Total: ". $key . "<br/>";
+             }
+
+             $block['content'] .= " Total: " . $totalItems;
 
          break;
 
@@ -186,4 +285,22 @@ function sla_calculations_block_view($delta = '') {
      }
 
      return $block;
+}
+
+
+
+function getTotalNodesByMachineName($contentType){
+
+  //Total Nodos
+  $queryTotal = new EntityFieldQuery();
+
+  $queryTotal->entityCondition('entity_type', 'node') // grab nodes
+  ->entityCondition('bundle', $contentType) // filter by blog type
+  ->propertyCondition('status', 1) // filter by published
+  ->count(); // count
+
+  $resultTotal = $queryTotal->execute();
+
+  return $resultTotal;
+
 }
